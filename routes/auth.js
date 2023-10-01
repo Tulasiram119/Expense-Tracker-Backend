@@ -19,7 +19,7 @@ Router.post(
   ],
   async (req, res) => {
     // is there are erros return bad request and errors
-    const sucess = false;
+    var sucess = false;
     const result = validationResult(req);
     if (!result.isEmpty()) {
       return res.status(400).send(result.array());
@@ -77,7 +77,7 @@ Router.post(
   ],
   async (req, res) => {
     // is there are erros return bad request and errors
-    let sucess = false;
+    var sucess = false;
     const result = validationResult(req);
     if (!result.isEmpty()) {
       return res.status(400).send(result.array());
@@ -109,7 +109,7 @@ Router.post(
       res.json({ sucess:sucess,authtoken });
     } catch (error) {
       console.error(error.message);
-      res.status(500).send("some error occurred");
+      res.status(500).send("internal sever error");
     }
   }
 );
