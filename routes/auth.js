@@ -19,6 +19,7 @@ Router.post(
   ],
   async (req, res) => {
     // is there are erros return bad request and errors
+    const sucess = false;
     const result = validationResult(req);
     if (!result.isEmpty()) {
       return res.status(400).send(result.array());
@@ -29,7 +30,7 @@ Router.post(
       if (user) {
         return res
           .status(400)
-          .send("Sorry user with the same email already exits");
+          .json({sucess,error:"Sorry user with the same email already exits"});
       }
       //Here we are adding hashing and salt to password by using bcryptjs
       const salt = await bcrypt.genSalt(10);
@@ -55,10 +56,11 @@ Router.post(
       };
       const authtoken = jwt.sign(data, JWT_SCRET);
       //res.send(user);
-      res.json({ authtoken });
+      sucess = true;
+      res.json({sucess, authtoken });
     } catch (error) {
       console.error(error.message);
-      res.status(500).send("some error occurred");
+      res.status(500).send("Internal server error");
     }
   }
 );
@@ -75,23 +77,26 @@ Router.post(
   ],
   async (req, res) => {
     // is there are erros return bad request and errors
+    let sucess = false;
     const result = validationResult(req);
     if (!result.isEmpty()) {
       return res.status(400).send(result.array());
     }
-    const { email, password } = req.body;
+    const { email,password } = req.body;
     try {
       let user = await User.findOne({ email });
       if (!user) {
+        sucess = false;
         return res
           .status(400)
-          .json({ error: "please try to login with correct creditionals" });
+          .json({sucess : sucess, error: "please try to login with correct creditionals" });
       }
       const passwordCompare = await bcrypt.compare(password, user.password);
       if (!passwordCompare) {
+        sucess = false;
         return res
           .status(400)
-          .json({ error: "please try to login with correct creditionals" });
+          .json({ sucess: sucess,error: "please try to login with correct creditionals" });
       }
       const data = {
         user: {
@@ -100,7 +105,8 @@ Router.post(
       };
       const authtoken = jwt.sign(data, JWT_SCRET);
       //res.send(user);
-      res.json({ authtoken });
+      sucess = true;
+      res.json({ sucess:sucess,authtoken });
     } catch (error) {
       console.error(error.message);
       res.status(500).send("some error occurred");
